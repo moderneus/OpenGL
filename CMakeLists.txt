@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 4.1.2)
+
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(PROJECT_NAME "OpenGL")
+
+project(${PROJECT_NAME} LANGUAGES C CXX)
+
+find_package(fmt REQUIRED)
+find_package(SDL3 REQUIRED)
+
+set(GLAD libs/src/glad)
+
+add_executable(${PROJECT_NAME}
+
+    #--LIBS--#
+    ${GLAD}/glad.c
+
+    #--SRC--#
+    src/Main.cpp
+
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE headers libs/headers)
+target_link_libraries(${PROJECT_NAME} fmt::fmt SDL3::SDL3)
