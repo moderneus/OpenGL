@@ -10,11 +10,11 @@ Logger::Logger()
     bool errorsOccured = false;
 
     if(initialized)
-        error("ERROR: Failed to initialize the Logger: ", "Already initialized.", &errorsOccured);
+        error("Failed to initialize the Logger: ", "Already initialized.", &errorsOccured);
 
     if(errorsOccured)
     {
-        error("ERROR: Failed to create the Logger.\n");
+        error("Failed to create the Logger.\n");
         std::exit(EXIT_FAILURE);
     }
 
@@ -28,17 +28,17 @@ bool Logger::isInit()
 
 void Logger::info(const char* msg)
 {
-    fmt::print(fmt::fg(fmt::color::white_smoke), "{}\n", msg);
+    fmt::print(fmt::fg(fmt::color::white_smoke), "INFO::{}\n", msg);
 }
 
 void Logger::success(const char* msg)
 {
-    fmt::print(fmt::fg(fmt::color::lime_green), "{}\n", msg);
+    fmt::print(fmt::fg(fmt::color::lime_green), "SUCCESS::{}\n", msg);
 }
 
 void Logger::error(const char* msg, const char* error, bool* errorsOccured)
 {
-    fmt::print(fmt::fg(fmt::color::red), "{}", msg);
+    fmt::print(fmt::fg(fmt::color::red), "ERROR::{}", msg);
     fmt::print(fmt::fg(fmt::color::white_smoke), "{}\n", error);
 
     *errorsOccured = true;
@@ -46,6 +46,6 @@ void Logger::error(const char* msg, const char* error, bool* errorsOccured)
 
 void Logger::error(const char* msg, GLenum error, bool* errorsOccured)
 {
-    fmt::print(fmt::fg(fmt::color::red), "{}", msg);
+    fmt::print(fmt::fg(fmt::color::red), "ERROR::{}", msg);
     fmt::print(fmt::fg(fmt::color::white_smoke), "{}\n", error);
 }

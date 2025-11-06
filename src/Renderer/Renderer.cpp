@@ -18,6 +18,13 @@ void Renderer::Renderer::createContext(const Window& window)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     context = SDL_GL_CreateContext(window.get());
+
+    if(!context)
+    {
+        log->error("Failed to create context: ", SDL_GetError());
+        std::exit(EXIT_FAILURE);
+    }
+
     SDL_GL_MakeCurrent(window.get(), context);
 }
 
@@ -31,12 +38,12 @@ Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
         log = new Logger();
 
     if(initialized)
-        log->error("ERRROR: Failed to initialize Renderer: ", "Already initialized.", &errorsOccured);
+        log->error("Failed to initialize Renderer: ", "Already initialized.", &errorsOccured);
  
     log->info("Initializing SDL3...");
 
     if(!SDL_Init(flags))
-        log->error("ERROR: SDL3 initialization failed: ", SDL_GetError(), &errorsOccured);
+        log->error("SDL3 initialization failed: ", SDL_GetError(), &errorsOccured);
 
     else
         log->success("SDL3 was initialized!");
@@ -44,7 +51,7 @@ Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
     log->info("Initializing GLAD...");
 
     if(!gladLoadGL())
-        log->error("ERROR: GLAD initialization failed: ", glGetError(), &errorsOccured);
+        log->error("GLAD initialization failed: ", glGetError(), &errorsOccured);
 
     else
         log->success("GLAD was initialized!");
