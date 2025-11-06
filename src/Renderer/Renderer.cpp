@@ -8,10 +8,10 @@
 
 #include "glad/glad.h"
 
-bool Renderer::Renderer::initialized = false;
-Logger* Renderer::Renderer::log;
+Renderer* Renderer::instance = nullptr;
+Logger* Renderer::log = Logger::get();
 
-void Renderer::Renderer::createContext(const Window& window)
+void Renderer::createContext(const Window& window)
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -28,17 +28,19 @@ void Renderer::Renderer::createContext(const Window& window)
     SDL_GL_MakeCurrent(window.get(), context);
 }
 
-Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
+Renderer::~Renderer()
+{
+    delete instance;
+    instance = nullptr;
+    SDL_GL_DestroyContext(context);
+    SDL_Quit();
+}
+
+void Renderer::init(const Window& window, const SDL_WindowFlags flags)
 {
     createContext(window);
-    
-    if(!log->isInit())
-        log = new Logger();
 
     bool errorsOccured = false;
-
-    if(initialized)
-        log->error("Failed to initialize Renderer: ", "Already initialized.", &errorsOccured);
  
     log->info("Initializing SDL3...");
 
@@ -68,18 +70,17 @@ Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
 
     log->info("GPU Device::", glGetString(GL_RENDERER));
     log->info("OpenGL Version::", glGetString(GL_VERSION));
-
-    initialized = true;
 }
 
-Renderer::Renderer::~Renderer()
+Renderer* Renderer::get()
 {
-    delete log;
-    SDL_GL_DestroyContext(context);
-    SDL_Quit();
+    if(instance == nullptr)
+        instance = new Renderer();
+
+    return instance;
 }
 
-void Renderer::Renderer::draw(const Window& window)
+void Renderer::draw(const Window& window)
 {
     SDL_GL_SetSwapInterval(1);
     glClearColor(0, 0, 1, 1);

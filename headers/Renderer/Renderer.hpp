@@ -7,20 +7,24 @@
 #include "Renderer/Window.hpp"
 #include "Utils/Logger.hpp"
 
-namespace Renderer
+class Renderer
 {
-    class Renderer
-    {
-    private:
-        static bool initialized;
-        SDL_GLContext context;
-        static Logger* log;
+private:
+    static Renderer* instance;
+    static Logger* log;
+    
+    SDL_GLContext context;
+    
+    void createContext(const Window& window);
+    Renderer() = default;
 
-        void createContext(const Window& window);
+public:
+    Renderer(const Renderer& renderer) = delete;
+    ~Renderer();
+    
+    void init(const Window& window, const SDL_WindowFlags flags);
+    static Renderer* get();
+    
+    void draw(const Window& window);
+};
 
-    public:
-        Renderer(const Window& window, const SDL_WindowFlags flags = NULL);
-        ~Renderer();
-        void draw(const Window& window);
-    };
-}

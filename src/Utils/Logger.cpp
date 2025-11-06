@@ -3,27 +3,20 @@
 #include <fmt/core.h>
 #include <fmt/color.h>
 
-bool Logger::initialized = false;
+Logger* Logger::instance = nullptr;
 
-Logger::Logger()
+Logger::~Logger()
 {
-    bool errorsOccured = false;
-
-    if(initialized)
-        error("Failed to initialize the Logger: ", "Already initialized.", &errorsOccured);
-
-    if(errorsOccured)
-    {
-        error("Failed to create the Logger.\n");
-        std::exit(EXIT_FAILURE);
-    }
-
-    initialized = true;
+    delete instance;
+    instance = nullptr;
 }
 
-bool Logger::isInit()
+Logger* Logger::get()
 {
-    return initialized ? true : false;
+    if(instance == nullptr)
+        instance = new Logger();
+
+    return instance;
 }
 
 void Logger::info(const char* msg, const char* value)
