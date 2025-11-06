@@ -4,6 +4,7 @@ set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 set(PROJECT_NAME "OpenGL")
 
@@ -21,6 +22,9 @@ add_executable(${PROJECT_NAME}
 
     #--SRC--#
     src/Main.cpp
+    src/Renderer/Window.cpp
+    src/Renderer/Renderer.cpp
+    src/Utils/Logger.cpp
 
 )
 
