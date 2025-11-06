@@ -10,7 +10,8 @@ private:
 public:
     Logger();
     bool isInit();
-    void info(const char* msg);
+    void info(const char* msg, const char* value = "");
+    void info(const char* msg, const GLubyte* value);
     void success(const char* msg);
     void error(const char* msg, const char* error = "", bool* errorsOccured = nullptr);
     void error(const char* msg, GLenum error, bool* errorsOccured = nullptr);

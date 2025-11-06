@@ -31,11 +31,11 @@ void Renderer::Renderer::createContext(const Window& window)
 Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
 {
     createContext(window);
-
-    bool errorsOccured = false;
-
+    
     if(!log->isInit())
         log = new Logger();
+
+    bool errorsOccured = false;
 
     if(initialized)
         log->error("Failed to initialize Renderer: ", "Already initialized.", &errorsOccured);
@@ -66,6 +66,9 @@ Renderer::Renderer::Renderer(const Window& window, SDL_WindowFlags flags)
 
     log->success("The Renderer was created!\n");
 
+    log->info("GPU Device::", glGetString(GL_RENDERER));
+    log->info("OpenGL Version::", glGetString(GL_VERSION));
+
     initialized = true;
 }
 
@@ -91,7 +94,7 @@ void Renderer::Renderer::draw(const Window& window)
             switch(event.type)
             {
                 case SDL_EVENT_QUIT:
-                    std::exit(EXIT_SUCCESS);
+                    quit = true;
                 break;
             }
         }
@@ -99,4 +102,6 @@ void Renderer::Renderer::draw(const Window& window)
         SDL_GL_SwapWindow(window.get());
         glClear(GL_COLOR_BUFFER_BIT);
     }
+    
+    log->info("Engine finished::", "User-quit.");
 }

@@ -26,9 +26,14 @@ bool Logger::isInit()
     return initialized ? true : false;
 }
 
-void Logger::info(const char* msg)
+void Logger::info(const char* msg, const char* value)
 {
-    fmt::print(fmt::fg(fmt::color::white_smoke), "INFO::{}\n", msg);
+    fmt::print(fmt::fg(fmt::color::white_smoke), "INFO::{}{}\n", msg, value);
+}
+
+void Logger::info(const char* msg, const GLubyte* value)
+{
+    fmt::print(fmt::fg(fmt::color::white_smoke), "INFO::{}{}\n", msg, (const char*)value);
 }
 
 void Logger::success(const char* msg)
