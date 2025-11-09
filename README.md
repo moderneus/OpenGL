@@ -117,7 +117,7 @@ SDL_Quit();
 - Next, we need a static *getInstance()* method that creates the instance and return the point to it or returns point to already created instance.
 - And last, we must free memory and make instance nullptr again in destructor.
 - Why we should use the Singleton design pattern? Because we need to have only ONE Renderer, only ONE Logger, otherwise the methods may get mixed up and conflict with each other.
-# Singleton design pattern implementation.
+# Singleton implementation.
 
 # Unique.hpp
 ```
@@ -143,9 +143,9 @@ Unique* Unique::instance = nullptr;
 Unique* Unique::getInstance()
 {
     if(instance == nullptr) 
-        instance = new Unique(); *// if not created - create and return instance*
+        instance = new Unique(); // if not created - create and return instance
 
-    return instance; *// if already created - just return instance*
+    return instance; // if already created - just return instance
 }
 
 Unique::~Unique()
@@ -173,3 +173,9 @@ int main()
     return 0;
 }
 ```
+
+# Output:
+
+firstUnique = 0x55669159b320
+secondUnique = 0x55669159b320
+
