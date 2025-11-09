@@ -108,4 +108,68 @@ SDL_Quit();
 - Next we should get a keyboard state, which is an array of *const bools** with *SDL_GetKeyboardState()* function.
 - Then we set the default color (Black) with *glClearColor()* function.
 - In main loop we check: is pressed *any* key? If true we check: is that key is R, G or B? If true we set the relevant color.
-- Next we clear a window with *glClear()* function and swapping the buffers. The unfinished frame is in the back buffer, when it is ready, the back buffer swaps with the front buffer, displaying the finished frame, and the frame is built again behind it.
+- Next we clear a window with *glClear()* function and swapping the buffers. The unfinished frame is in the back buffer, when it is ready, the back buffer swaps with the front buffer, displaying the finished frame, and the next frame is built again behind it.
+
+## 3. Singleton design pattern.
+- The Singleton pattern is offering to exactly have only one instance of some class. For example: Logger, Renderer, etc.
+- To have a guarantee that we have only one instance - firstly we must create a static selftype-pointer variable, which points to nullptr.
+- Then we should move a default constructor into private section, then delete the copy constructor and assignment operator.
+- Next, we need a static *getInstance()* method that creates the instance and return the point to it or returns point to already created instance.
+- And last, we must free memory and make instance nullptr again in destructor.
+- Why we should use the Singleton design pattern? Because we need to have only ONE Renderer, only ONE Logger, otherwise the methods may get mixed up and conflict with each other.
+# Singleton design pattern implementation.
+
+# Unique.hpp
+```
+#pragma once
+
+class Unique
+{
+private:
+    static Unique* instance;
+    Unique() = default;
+
+public:
+    Unique(const Unique& other) = delete;
+    Unique& operator=(const Unique& other) = delete;
+
+    ~Unique();
+
+    static Unique* getInstance();
+};
+
+Unique* Unique::instance = nullptr;
+
+Unique* Unique::getInstance()
+{
+    if(instance == nullptr) 
+        instance = new Unique(); *// if not created - create and return instance*
+
+    return instance; *// if already created - just return instance*
+}
+
+Unique::~Unique()
+{
+    delete instance;
+    instance = nullptr;
+}
+```
+
+# Main.cpp
+
+```
+#include "Unique.hpp"
+
+#include <iostream>
+
+int main()
+{
+    Unique* firstUnique = Unique::getInstance();
+    Unique* secondUnique = Unique::getInstance();
+
+    std::cout << "firstUnique = " << firstUnique << std::endl;
+    std::cout << "secondUnique = " << secondUnique << std::endl;
+
+    return 0;
+}
+```
