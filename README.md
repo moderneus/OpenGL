@@ -116,11 +116,11 @@ SDL_Quit();
 - Then we should move a default constructor into private section, then delete the copy constructor and assignment operator.
 - Next, we need a static *getInstance()* method that creates the instance and return the point to it or returns point to already created instance.
 - And last, we must free memory and make instance nullptr again in destructor.
-- Why we should use the Singleton design pattern? Because we need to have only ONE Renderer, only ONE Logger, otherwise the methods may get mixed up and conflict with each other.
+- Why we should use the Singleton design pattern? Because we need to have only *ONE* Renderer, only *ONE* Logger, only *ONE* instance, otherwise the methods may get mixed up and conflict with each other.
 
 # Singleton implementation.
 
-- Unique.hpp
+- **Unique.hpp**
 
 ```
 #pragma once
@@ -157,7 +157,7 @@ Unique::~Unique()
 }
 ```
 
-- Main.cpp
+- **Main.cpp**
 
 ```
 #include "Unique.hpp"
@@ -176,9 +176,9 @@ int main()
 }
 ```
 
-- Output:
+- **Output:**
 
-firstUnique = 0x55669159b320
+*firstUnique* = 0x55669159b320
+*secondUnique* = 0x55669159b320
 
-secondUnique = 0x55669159b320
 
