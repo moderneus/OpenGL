@@ -1,4 +1,4 @@
-## 1. Creating Window with SDL3.
+# 1. Creating Window with SDL3.
 - To create a window with *SDL3* firstly we need to initialize *SDL3*. We can use the *SDL_Init()* function, passing in initialization flags, such as *SDL_INIT_VIDEO*, *SDL_INIT_AUDIO*, etc. 
 
 - Secondly we need a window itself. To get it we should use *SDL_CreateWindow()* function with relevant arguments.
@@ -6,7 +6,7 @@
 - Next, we want to be able to handle any events, such as *SDL_EVENT_QUIT*, *SDL_EVENT_WINDOW_MOVED*, *SDL_EVENT_WINDOW_RESIZED*, etc. 
 For example we want to handle an *SDL_EVENT_QUIT*. If user closed the window — break the event handle loop. 
 
-# Code: 
+## Code: 
 ```
 SDL_Init(SDL_INIT_VIDEO);
 
@@ -30,21 +30,21 @@ SDL_Quit();
 
 Congratulations! We have a window and event handle loop! Now we must terminate the program correctly. To do this we must destroy the window and free all *SDL3* allocated memory. Use the *SDL_DestroyWindow()* and *SDL_Quit()* functions for it 🎉
 
-## 2. Termins and color-change window program.
-# GLAD.
+# 2. Termins and color-change window program.
+## GLAD.
 - GLAD is a function loader for OpenGL. Since there are many different versions of OpenGL drivers, the location of most of its functions is not known at compile-time and needs to be queried at run-time.
 - GLAD must be loaded with *gladLoadGL()* function after creating and making current a context.
 
-# Context.
+## Context.
 - An OpenGL context is an object in the video driver that stores all the current OpenGL state and the set of supported GPU capabilities used for rendering: active shaders, buffers, textures, render objects, and graphics pipeline parameters.
 - To create context firstly we should set OpenGL attributes, such as *SDL_GL_CONTEXT_MAJOR_VERSION*, *SDL_GL_CONTEXT_MINOR_VERSION*, *SDL_GL_CONTEXT_PROFILE_MASK*. We can use *SDL_GL_SetAttribute()* function for it.
 - After setting up a context we can create it and make it current with *SDL_GL_CreateContext()* and *SDL_GL_MakeCurrent()* functions.
 
-# Color-change program.
+## Color-change program.
 - Now we will try to create a program that changes a window color to another by pressing defined keys.
 - key *'R'* changes to red, *'G'* key to green and *'B'* to blue. Default color is black.
 
-# Code:
+## Code:
 ```
 // INIT
 SDL_Init(SDL_INIT_VIDEO);    
@@ -110,7 +110,7 @@ SDL_Quit();
 - In main loop we check: is pressed *any* key? If true we check: is that key is R, G or B? If true we set the relevant color.
 - Next we clear a window with *glClear()* function and swapping the buffers. The unfinished frame is in the back buffer, when it is ready, the back buffer swaps with the front buffer, displaying the finished frame, and the next frame is built again behind it.
 
-## 3. Singleton design pattern.
+# 3. Singleton design pattern.
 - The Singleton pattern is offering to exactly have only one instance of some class. For example: Logger, Renderer, etc.
 - To have a guarantee that we have only one instance - firstly we must create a static selftype-pointer variable, which points to nullptr.
 - Then we should move a default constructor into private section, then delete the copy constructor and assignment operator.
@@ -118,7 +118,7 @@ SDL_Quit();
 - And last, we must free memory and make instance nullptr again in destructor.
 - Why we should use the Singleton design pattern? Because we need to have only *ONE* Renderer, only *ONE* Logger, only *ONE* instance, otherwise the methods may get mixed up and conflict with each other.
 
-# Singleton implementation.
+## Singleton implementation.
 
 - **Unique.hpp**
 
@@ -179,6 +179,8 @@ int main()
 - **Output:**
 
 *firstUnique* = 0x55669159b320
+
 *secondUnique* = 0x55669159b320
+
 
 
