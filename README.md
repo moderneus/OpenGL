@@ -115,7 +115,6 @@ SDL_Quit();
 - To have a guarantee that we have only one instance - firstly we must create a static selftype-pointer variable, which points to nullptr.
 - Then we should move a default constructor into private section, then delete the copy constructor and assignment operator.
 - Next, we need a static *getInstance()* method that creates the instance and return the point to it or returns point to already created instance.
-- And last, we must free memory and make instance nullptr again in destructor.
 - Why we should use the Singleton design pattern? Because we need to have only *ONE* Renderer, only *ONE* Logger, only *ONE* instance, otherwise the methods may get mixed up and conflict with each other.
 
 ## Singleton implementation.
@@ -149,12 +148,6 @@ Unique* Unique::getInstance()
 
     return instance; // if already created - just return instance
 }
-
-Unique::~Unique()
-{
-    delete instance;
-    instance = nullptr;
-}
 ```
 
 - **Main.cpp**
@@ -181,6 +174,7 @@ int main()
 *firstUnique* = 0x55669159b320
 
 *secondUnique* = 0x55669159b320
+
 
 
 
