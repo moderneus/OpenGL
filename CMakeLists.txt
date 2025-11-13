@@ -22,11 +22,19 @@ add_executable(${PROJECT_NAME}
 
     #--SRC--#
     src/Main.cpp
+
     src/Renderer/Window.cpp
     src/Renderer/Renderer.cpp
+    src/Renderer/VAO.cpp
+    src/Renderer/VBO.cpp
+    
+    src/Shaders/Shader.cpp
+    
     src/Utils/Logger.cpp
 
 )
+
+file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE headers libs/headers)
 target_link_libraries(${PROJECT_NAME} fmt::fmt SDL3::SDL3)

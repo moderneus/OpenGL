@@ -10,21 +10,23 @@
 class Renderer
 {
 private:
+    static Window* window;
     static Renderer* instance;
     static Logger* log;
-    
-    SDL_GLContext context;
-    
-    void createContext(const Window& window);
+
+    SDL_GLContext context; 
+
+    void pollEvents();
+    void createContext();
+
     Renderer() = default;
 
 public:
     Renderer(const Renderer& renderer) = delete;
-    ~Renderer();
     
-    void init(const Window& window, const SDL_WindowFlags flags);
-    static Renderer* get();
+    void init();
+    void destroy();
+    static Renderer* getInstance();
     
-    void draw(const Window& window);
+    void draw();
 };
-

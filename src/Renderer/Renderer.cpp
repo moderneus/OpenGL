@@ -1,4 +1,5 @@
 #include "Renderer/Renderer.hpp"
+#include "Shaders/Shader.hpp"
 
 #include <fmt/core.h>
 #include <fmt/base.h>
@@ -9,15 +10,18 @@
 #include "glad/glad.h"
 
 Renderer* Renderer::instance = nullptr;
-Logger* Renderer::log = Logger::get();
+Window* Renderer::window = nullptr;        
+Logger* Renderer::log = Logger::getInstance();
 
-void Renderer::createContext(const Window& window)
+void Renderer::createContext()
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    context = SDL_GL_CreateContext(window.get());
+    log->info("Creating a Context...");
+
+    context = SDL_GL_CreateContext(window->get());
 
     if(!context)
     {
@@ -25,30 +29,35 @@ void Renderer::createContext(const Window& window)
         std::exit(EXIT_FAILURE);
     }
 
-    SDL_GL_MakeCurrent(window.get(), context);
+    else
+    {
+        log->success("The Context was created!");
+    }
+
+    SDL_GL_MakeCurrent(window->get(), context);
 }
 
-Renderer::~Renderer()
+void Renderer::init()
 {
-    delete instance;
-    instance = nullptr;
-    SDL_GL_DestroyContext(context);
-    SDL_Quit();
-}
-
-void Renderer::init(const Window& window, const SDL_WindowFlags flags)
-{
-    createContext(window);
+    log->info("Initialization...");
+    log->info("Creating Renderer...");
 
     bool errorsOccured = false;
  
     log->info("Initializing SDL3...");
 
-    if(!SDL_Init(flags))
+    if(!SDL_Init(SDL_INIT_VIDEO))
         log->error("SDL3 initialization failed: ", SDL_GetError(), &errorsOccured);
 
     else
         log->success("SDL3 was initialized!");
+
+    
+    window = Window::getInstance("OpenGL", 640, 480, SDL_WINDOW_OPENGL);
+    
+    errorsOccured = window->errors();
+    
+    createContext();
     
     log->info("Initializing GLAD...");
 
@@ -58,21 +67,42 @@ void Renderer::init(const Window& window, const SDL_WindowFlags flags)
     else
         log->success("GLAD was initialized!");
     
-    log->info("Creating Renderer...");
 
     if(errorsOccured)
     {
-        log->error("Errors occured: Failed to create renderer.\n");
+        log->error("Failed to create renderer.\n");
         std::exit(EXIT_FAILURE);
     }
 
     log->success("The Renderer was created!\n");
+    
+    log->info(GL_RENDERER, glGetString(GL_RENDERER));
+    log->info(GL_VERSION, glGetString(GL_VERSION));
 
-    log->info("GPU Device::", glGetString(GL_RENDERER));
-    log->info("OpenGL Version::", glGetString(GL_VERSION));
+    log->success("Initializated!\n");
 }
 
-Renderer* Renderer::get()
+void Renderer::destroy()
+{
+    window->destroy();
+    
+    SDL_GL_DestroyContext(context);
+
+    log->info("The Context was deleted.");
+    
+    SDL_Quit();
+
+    log->info("The SDL3 memory free.");
+
+    delete instance;
+    instance = nullptr;
+
+    log->info("The Renderer was deleted.");
+    
+    log->destroy();
+}
+
+Renderer* Renderer::getInstance()
 {
     if(instance == nullptr)
         instance = new Renderer();
@@ -80,28 +110,71 @@ Renderer* Renderer::get()
     return instance;
 }
 
-void Renderer::draw(const Window& window)
+void Renderer::pollEvents()
+{
+    SDL_Event event;
+    if(SDL_PollEvent(&event))
+    {
+        switch(event.type)
+        {
+            case SDL_EVENT_QUIT:
+                window->close();
+            break;
+        }
+    }
+}
+
+void Renderer::draw()
 {
     SDL_GL_SetSwapInterval(1);
-    glClearColor(0, 0, 1, 1);
+    glClearColor(1, 1, 0, 1);
 
-    SDL_Event event;
-
-    bool quit = false;
-    while(!quit)
+    GLfloat vertices[]
     {
-        if(SDL_PollEvent(&event))
-        {
-            switch(event.type)
-            {
-                case SDL_EVENT_QUIT:
-                    quit = true;
-                break;
-            }
-        }
+        0.0f,  0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+       -0.5f, -0.5f, 0.0f,
+    };
 
-        SDL_GL_SwapWindow(window.get());
+    GLfloat colors[]
+    {
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+    };
+
+    Shader vertexShader(GL_VERTEX_SHADER, "shaders/vertexShader.vert");
+    Shader fragmentShader(GL_FRAGMENT_SHADER, "shaders/fragmentShader.frag");
+    
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    GLuint vboVertices;
+    glGenBuffers(1, &vboVertices);
+    glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    GLuint vboColors;
+    glGenBuffers(1, &vboColors);
+    glBindBuffer(GL_ARRAY_BUFFER, vboColors);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(1);
+    
+    while(!window->closed())
+    {
+        pollEvents();
+
+        Shader::use();
+
         glClear(GL_COLOR_BUFFER_BIT);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        SDL_GL_SwapWindow(window->get());
     }
     
     log->info("Engine finished::", "User-quit.");
