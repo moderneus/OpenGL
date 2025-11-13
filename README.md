@@ -134,8 +134,6 @@ public:
     Unique(const Unique& other) = delete;
     Unique& operator=(const Unique& other) = delete;
 
-    ~Unique();
-
     static Unique* getInstance();
 };
 
@@ -174,6 +172,7 @@ int main()
 *firstUnique* = 0x55669159b320
 
 *secondUnique* = 0x55669159b320
+
 
 
 
