@@ -1,1 +1,1 @@
-This is a walkthrough of [Learn OpenGL](https://learnopengl.com). Yes, after the Vulkan Tutorial... But who cares? ¯\_(ツ)_/¯
+This is a walkthrough of [Learn OpenGL](https://learnopengl.com). Yes, after the Vulkan Tutorial... But who cares? ¯\\\_(ツ)_/¯
