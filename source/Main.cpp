@@ -5,12 +5,14 @@
 #include <array>
 
 // clang-format off
-std::array<GLfloat, 18> vertices{
-  -1.0f, -0.5f, 0.0f, // first triangle
-  -0.5,   0.5f, 0.0f,
+std::array<GLfloat, 9> firstTriangle{
+  -1.0f, -0.5f, 0.0f,
+  -0.5f,  0.5f, 0.0f,
    0.0f, -0.5f, 0.0f,
 
-   0.0f, -0.5,  0.0f, //second triangle
+};
+std::array<GLfloat, 9> secondTriangle{
+   0.0f, -0.5f, 0.0f,
    0.5f,  0.5f, 0.0f,
    1.0f, -0.5f, 0.0f,
 };
@@ -88,19 +90,38 @@ int main() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+  // first triangle
+  GLuint firstTriangleVAO = 0;
+  glGenVertexArrays(1, &firstTriangleVAO);
+  glBindVertexArray(firstTriangleVAO);
 
-  GLuint vbo = 0;
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, (sizeof(vertices[0]) * vertices.size()),
-      vertices.data(), GL_STATIC_DRAW);
+  GLuint firstTriangleVBO = 0;
+  glGenBuffers(1, &firstTriangleVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, firstTriangleVBO);
+  glBufferData(GL_ARRAY_BUFFER,
+      (sizeof(firstTriangle[0]) * firstTriangle.size()), firstTriangle.data(),
+      GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(
+      0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
   glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
 
+  // second triangle
+  GLuint secondTriangleVAO = 0;
+  glGenVertexArrays(1, &secondTriangleVAO);
+  glBindVertexArray(secondTriangleVAO);
+
+  GLuint secondTriangleVBO = 0;
+  glGenBuffers(1, &secondTriangleVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, secondTriangleVBO);
+  glBufferData(GL_ARRAY_BUFFER,
+      (sizeof(secondTriangle[0]) * secondTriangle.size()),
+      secondTriangle.data(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(
+      0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+  glEnableVertexAttribArray(0);
   glBindVertexArray(0);
 
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -111,8 +132,10 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(firstTriangleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(secondTriangleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
