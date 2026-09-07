@@ -3,13 +3,16 @@
 
 #include <iostream>
 #include <array>
-#include <string>
 
 // clang-format off
-std::array<float, 9> vertices{
-  -0.5f, -0.5f, 0.0f,
-   0.5f, -0.5f, 0.0f,
-   0.0f,  0.5f, 0.0f,
+std::array<GLfloat, 18> vertices{
+  -1.0f, -0.5f, 0.0f, // first triangle
+  -0.5,   0.5f, 0.0f,
+   0.0f, -0.5f, 0.0f,
+
+   0.0f, -0.5,  0.0f, //second triangle
+   0.5f,  0.5f, 0.0f,
+   1.0f, -0.5f, 0.0f,
 };
 // clang-format on
 
@@ -109,7 +112,7 @@ int main() {
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
