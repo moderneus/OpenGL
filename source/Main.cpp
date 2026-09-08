@@ -78,6 +78,7 @@ int main() {
   }
 
   glViewport(0, 0, 800, 600);
+
   glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
   // vertex shader for both the triangles
