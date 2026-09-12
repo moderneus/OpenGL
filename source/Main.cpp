@@ -3,13 +3,13 @@
 
 #include <iostream>
 #include <array>
+#include <cmath>
 
 // clang-format off
 std::array<GLfloat, 9> vertices {
-  -1.0f, -0.5f, 0.0f,
-  -0.5f,  0.5f, 0.0f,
-   0.0f, -0.5f, 0.0f,
-
+  -0.5f, -0.5f, 0.0f,
+   0.0f,  0.5f, 0.0f,
+   0.5f, -0.5f, 0.0f,
 };
 // clang-format on
 
@@ -28,8 +28,10 @@ const char *fragmentShaderSource = R"(
 
 out vec4 color;
 
+uniform vec4 ourColor;
+
 void main() {
-  color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  color = ourColor;
 }
 )";
 
@@ -109,6 +111,12 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
+
+    float time = glfwGetTime();
+    float green = std::sin(time) / 2.0f + 0.5f;
+    int uniformLocation = glGetUniformLocation(shaderProgram, "ourColor");
+    glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f);
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
