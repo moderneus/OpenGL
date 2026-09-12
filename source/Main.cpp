@@ -3,23 +3,26 @@
 
 #include <iostream>
 #include <array>
-#include <cmath>
 
 // clang-format off
-std::array<GLfloat, 9> vertices {
-  -0.5f, -0.5f, 0.0f,
-   0.0f,  0.5f, 0.0f,
-   0.5f, -0.5f, 0.0f,
+std::array<GLfloat, 18> vertices {
+  -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,
+   0.0f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,
+   0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,
 };
 // clang-format on
 
 const char *vertexShaderSource = R"(
 #version 460 core
 
-layout (location = 0) in vec3 vertex;
+layout (location = 0) in vec3 vertexPosition;
+layout (location = 1) in vec3 vertexColor;
+
+out vec3 ourColor;
 
 void main() {
-  gl_Position = vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+  gl_Position = vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1.0f);
+  ourColor = vertexColor;
 }
 )";
 
@@ -28,10 +31,10 @@ const char *fragmentShaderSource = R"(
 
 out vec4 color;
 
-uniform vec4 ourColor;
+in vec3 ourColor;
 
 void main() {
-  color = ourColor;
+  color = vec4(ourColor, 1.0f);
 }
 )";
 
@@ -99,11 +102,16 @@ int main() {
       vertices.data(), GL_STATIC_DRAW);
 
   glVertexAttribPointer(
-      0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+      0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat),
+      (GLvoid *)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(1);
+
   glBindVertexArray(0);
 
-  glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   while (!glfwWindowShouldClose(window)) {
     HandleInput(window);
@@ -111,11 +119,6 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
-
-    float time = glfwGetTime();
-    float green = std::sin(time) / 2.0f + 0.5f;
-    int uniformLocation = glGetUniformLocation(shaderProgram, "ourColor");
-    glUniform4f(uniformLocation, 0.0f, green, 0.0f, 1.0f);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
