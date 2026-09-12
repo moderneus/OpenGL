@@ -5,16 +5,11 @@
 #include <array>
 
 // clang-format off
-std::array<GLfloat, 9> firstTriangle{
+std::array<GLfloat, 9> vertices {
   -1.0f, -0.5f, 0.0f,
   -0.5f,  0.5f, 0.0f,
    0.0f, -0.5f, 0.0f,
 
-};
-std::array<GLfloat, 9> secondTriangle{
-   0.0f, -0.5f, 0.0f,
-   0.5f,  0.5f, 0.0f,
-   1.0f, -0.5f, 0.0f,
 };
 // clang-format on
 
@@ -28,23 +23,13 @@ void main() {
 }
 )";
 
-const char *firstFragmentShaderSource = R"(
+const char *fragmentShaderSource = R"(
 #version 460 core
 
 out vec4 color;
 
 void main() {
   color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-}
-)";
-
-const char *secondFragmentShaderSource = R"(
-#version 460 core
-
-out vec4 color;
-
-void main() {
-  color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 )";
 
@@ -81,74 +66,35 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
-  // vertex shader for both the triangles
   GLuint vertexShader = 0;
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
   glCompileShader(vertexShader);
 
-  // fragment shader for the first triangle
-  GLuint firstFragmentShader = 0;
-  firstFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(firstFragmentShader, 1, &firstFragmentShaderSource, nullptr);
-  glCompileShader(firstFragmentShader);
+  GLuint fragmentShader = 0;
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+  glCompileShader(fragmentShader);
 
-  // shader program for the first triangle
-  GLuint firstShaderProgram = 0;
-  firstShaderProgram = glCreateProgram();
+  GLuint shaderProgram = 0;
+  shaderProgram = glCreateProgram();
 
-  glAttachShader(firstShaderProgram, vertexShader);
-  glAttachShader(firstShaderProgram, firstFragmentShader);
-  glLinkProgram(firstShaderProgram);
+  glAttachShader(shaderProgram, vertexShader);
+  glAttachShader(shaderProgram, fragmentShader);
+  glLinkProgram(shaderProgram);
 
-  glDeleteShader(firstFragmentShader);
-
-  // fragment shader for the second triangle
-  GLuint secondFragmentShader = 0;
-  secondFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(secondFragmentShader, 1, &secondFragmentShaderSource, nullptr);
-  glCompileShader(secondFragmentShader);
-
-  // shader program for the second triangle
-  GLuint secondShaderProgram = 0;
-  secondShaderProgram = glCreateProgram();
-
-  glAttachShader(secondShaderProgram, vertexShader);
-  glAttachShader(secondShaderProgram, secondFragmentShader);
-  glLinkProgram(secondShaderProgram);
-
-  // delete the shaders
   glDeleteShader(vertexShader);
-  glDeleteShader(secondFragmentShader);
+  glDeleteShader(fragmentShader);
 
-  // first triangle
-  GLuint firstTriangleVAO = 0;
-  glGenVertexArrays(1, &firstTriangleVAO);
-  glBindVertexArray(firstTriangleVAO);
+  GLuint vao = 0;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
-  GLuint firstTriangleVBO = 0;
-  glGenBuffers(1, &firstTriangleVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, firstTriangleVBO);
-  glBufferData(GL_ARRAY_BUFFER,
-      (sizeof(firstTriangle[0]) * firstTriangle.size()), firstTriangle.data(),
-      GL_STATIC_DRAW);
-
-  glVertexAttribPointer(
-      0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-  glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
-
-  // second triangle
-  GLuint secondTriangleVAO = 0;
-  glGenVertexArrays(1, &secondTriangleVAO);
-  glBindVertexArray(secondTriangleVAO);
-
-  GLuint secondTriangleVBO = 0;
-  glGenBuffers(1, &secondTriangleVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, secondTriangleVBO);
-  glBufferData(GL_ARRAY_BUFFER,
-      (sizeof(secondTriangle[0]) * secondTriangle.size()),
-      secondTriangle.data(), GL_STATIC_DRAW);
+  GLuint vbo = 0;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, (sizeof(vertices[0]) * vertices.size()),
+      vertices.data(), GL_STATIC_DRAW);
 
   glVertexAttribPointer(
       0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
@@ -162,14 +108,8 @@ int main() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // first triangle
-    glUseProgram(firstShaderProgram);
-    glBindVertexArray(firstTriangleVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    // second triangle
-    glUseProgram(secondShaderProgram);
-    glBindVertexArray(secondTriangleVAO);
+    glUseProgram(shaderProgram);
+    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(window);
